@@ -14,27 +14,27 @@ int main(int argc, char **argv){
     hints.ai_family = AF_UNSPEC; // Coge direcciones de cualquier familia (ipv4, ipv6...)
     hints.ai_socktype = SOCK_DGRAM;
 
-    struct addrinfo *tiempo;
+    struct addrinfo *result;
 
-    int rc = getaddrinfo(argv[1], argv[2], &hints, &tiempo);
+    int rc = getaddrinfo(argv[1], argv[2], &hints, &result);
     if(rc != 0) {
         std::cerr << "Error getaddrinfo " << gai_strerror(rc) << std::endl;
         return -1;
     }
 
-    int sd = socket(tiempo->ai_family, tiempo->ai_socktype, 0);
+    int sd = socket(result->ai_family, result->ai_socktype, 0);
     if (sd == -1) {
 		std::cerr << "Error, socket no creado\n";
 		return -1;
 	}
 
-    int b = bind(sd, (struct sockaddr *) tiempo->ai_addr, tiempo->ai_addrlen);
+    int b = bind(sd, (struct sockaddr *) result->ai_addr, result->ai_addrlen);
     if(b == -1){
         std::cerr << "Error asignando addr a socket\n";
 		return -1;
     }
 
-    freeaddrinfo(tiempo);
+    freeaddrinfo(result);
 
     bool exit = false;
     char buffer[BUFFER_MAX];
