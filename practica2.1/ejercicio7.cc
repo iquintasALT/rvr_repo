@@ -1,9 +1,12 @@
-#include <netdb.h>
-#include <iostream>
-#include <string.h>
-#include <unistd.h>
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <netdb.h>
+#include <string.h>
+#include <iostream>
+#include <unistd.h>
+#include <thread>
+#include <mutex>
+#include <condition_variable>
 
 const size_t BUFFER_MAX = 80;
 #define MAXLISTEN 3
@@ -89,7 +92,7 @@ int main(int argc, char **argv)
 
     while(true) {
 		struct sockaddr cliente;
-		socklen_t cliente_Len = sizeof(struct sockaddr);
+		socklen_t cliente_len = sizeof(struct sockaddr);
 
 		{
 			std::unique_lock<std::mutex> lck(numMutex);
@@ -99,7 +102,7 @@ int main(int argc, char **argv)
 			}
 		}
 
-		int clientesd = accept(sd, (struct sockaddr *) &cliente, &clientelen);
+		int clientesd = accept(sd, (struct sockaddr *) &cliente, &cliente_len);
 		if (clientesd == -1) {
 	                std::cerr << "Error en el accept\n";
 			close(sd);
@@ -109,7 +112,7 @@ int main(int argc, char **argv)
 		char host[NI_MAXHOST];
 		char serv[NI_MAXSERV];
 
-		getnameinfo((struct sockaddr *) &cliente, clientelen, host, NI_MAXHOST,
+		getnameinfo((struct sockaddr *) &cliente, cliente_len, host, NI_MAXHOST,
 			serv, NI_MAXSERV, NI_NUMERICHOST | NI_NUMERICSERV);
 		std::cout << "Conexión desde " << host << " " << serv << "\n";
 
