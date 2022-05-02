@@ -21,11 +21,12 @@ Socket::Socket(const char * address, const char * port):sd(-1)
         std::cerr << "Error getaddrinfo " << gai_strerror(rc) << std::endl;
     }
 
-    int sd = socket(res->ai_family, res->ai_socktype, 0);
-    if (sd == -1) {
+    int sk = socket(res->ai_family, res->ai_socktype, 0);
+    if (sk == -1) {
 		std::cerr << "Error, socket no creado\n";
 	}
 
+    sd = sk;
     sa = *res->ai_addr;
     sa_len = res->ai_addrlen;
 
